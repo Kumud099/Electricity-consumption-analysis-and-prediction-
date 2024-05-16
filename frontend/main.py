@@ -1,4 +1,6 @@
 import streamlit as st
+import subprocess
+import multiprocessing
 from streamlit_option_menu import option_menu
 from dashboard import dashboard
 from dataset import dataset
@@ -10,6 +12,26 @@ from prediction_by_year import prediction_by_year
 user_emoji = '⚡'
 
 def main():
+    # Start Flask apps using multiprocessing
+    p1 = multiprocessing.Process(target=run_flask_app1)
+    p2 = multiprocessing.Process(target=run_flask_app2)
+    p1.start()
+    p2.start()
+
+    # Run Streamlit app
+    run_streamlit_app()
+
+    # Wait for Flask apps to finish
+    p1.join()
+    p2.join()
+
+def run_flask_app1():
+    subprocess.run(["/usr/local/bin/python3", "./backend/SJNX.py"])
+
+def run_flask_app2():
+    subprocess.run(["/usr/local/bin/python3", "./backend/temperature.py"])
+
+def run_streamlit_app():
     st.title("Electricity Consumption Analysis and Prediction")
 
     # Sidebar navigation for the dashboard
